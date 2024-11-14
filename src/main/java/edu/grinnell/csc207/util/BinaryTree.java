@@ -2,6 +2,7 @@ package edu.grinnell.csc207.util;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * Simple binary trees.
@@ -10,8 +11,7 @@ import java.util.Iterator;
  * @author Your Name Here
  * @author Your Name Here
  *
- * @param <T>
- *   The type of value stored in the tree.
+ * @param <T> The type of value stored in the tree.
  */
 public class BinaryTree<T> implements Iterable<T> {
 
@@ -44,8 +44,7 @@ public class BinaryTree<T> implements Iterable<T> {
   /**
    * Create a new, somewhat balanced, tree.
    *
-   * @param values
-   *   The values to put in the tree.
+   * @param values The values to put in the tree.
    */
   public BinaryTree(T[] values) {
     this.size = values.length;
@@ -59,8 +58,7 @@ public class BinaryTree<T> implements Iterable<T> {
   /**
    * Dump the tree to some output location.
    *
-   * @param pen
-   *   The output location.
+   * @param pen The output location.
    */
   public void dump(PrintWriter pen) {
     dump(pen, root, "");
@@ -73,9 +71,9 @@ public class BinaryTree<T> implements Iterable<T> {
    */
   public Iterator<T> iterator() {
     return new Iterator<T>() {
-
+      Stack<Object> remaining = new Stack<Object>();
       public boolean hasNext() {
-        // STUB
+
         return false;
       } // hasNext()
 
@@ -93,12 +91,9 @@ public class BinaryTree<T> implements Iterable<T> {
   /**
    * Dump a portion of the tree to some output location.
    *
-   * @param pen
-   *   Where to dump the output.
-   * @param node
-   *   The node to dump.
-   * @param indent
-   *   How far to indent the dumped values.
+   * @param pen Where to dump the output.
+   * @param node The node to dump.
+   * @param indent How far to indent the dumped values.
    */
   void dump(PrintWriter pen, BinaryTreeNode<T> node, String indent) {
     if (node == null) {
@@ -115,15 +110,11 @@ public class BinaryTree<T> implements Iterable<T> {
   /**
    * Build a tree from a subarray from lb (inclusive) to ub (exclusive).
    *
-   * @param values
-   *   The array from which to draw values.
-   * @param lb
-   *   The lower bound of the subarray (inclusive).
-   * @param ub
-   *   The upper bound of the subarray (exclusive).
+   * @param values The array from which to draw values.
+   * @param lb The lower bound of the subarray (inclusive).
+   * @param ub The upper bound of the subarray (exclusive).
    *
-   * @return
-   *   The root of the newly made tree.
+   * @return The root of the newly made tree.
    */
   BinaryTreeNode<T> makeTree(T[] values, int lb, int ub) {
     if (ub <= lb) {
@@ -136,5 +127,79 @@ public class BinaryTree<T> implements Iterable<T> {
           makeTree(values, mid + 1, ub));
     } // if/else
   } // makeTree(T[], int, int)
+
+  public void elements01(PrintWriter pen) {
+    element01Helper(this.root, pen);
+  } // element01(PrintWriter)
+
+  private void element01Helper(BinaryTreeNode root, PrintWriter pen) {
+    pen.print(root.value + " ");
+
+    if (root.left != null) {
+      element01Helper(root.left, pen);
+    }
+
+    if (root.right != null) {
+      element01Helper(root.right, pen);
+    }
+  }
+
+  /**
+   * Inorder Traversal of BT.
+   * 
+   * @param pen PrintWriter Object
+   */
+  public void elements02(PrintWriter pen) {
+    element02Helper(this.root, pen);
+  } // element01(PrintWriter)
+
+
+  private void element02Helper(BinaryTreeNode root, PrintWriter pen) {
+    if (root.left != null) {
+      element02Helper(root.left, pen);
+    }
+
+    pen.print(root.value + " ");
+
+    if (root.right != null) {
+      element02Helper(root.right, pen);
+    }
+  }
+
+  /**
+   * Print all of the elements in some order or other.
+   * 
+   * Note: We are trying to avoid recursion.
+   */
+  public void print(PrintWriter pen) {
+    // A collection of the remaining things to print
+    Stack<Object> remaining = new Stack<Object>();
+    remaining.push(this.root);
+    // Invariants:
+    // remaining only contains Strings or Nodes
+    // All values in the tree are either
+    // (a) already printed,
+    // (b) in remaining, or
+    // (c) in or below a node in remaining
+    while (!remaining.isEmpty()) {
+      Object next = remaining.pop();
+      if (next instanceof BinaryTreeNode<?>) {
+        @SuppressWarnings("unchecked")
+        BinaryTreeNode<T> node = (BinaryTreeNode<T>) next;
+        if (node.left != null) {
+          remaining.push(node.left);
+        } // if (node.left != null)
+        remaining.push(node.value);
+        if (node.right != null) {
+          remaining.push(node.right);
+        } // if (node.right != null)
+      } else {
+        pen.print(next);
+        pen.print(" ");
+      } // if/else
+    } // while
+    pen.println();
+  } // print(PrintWriter)
+
 
 } // class BinaryTree
